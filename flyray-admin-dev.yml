@@ -1,0 +1,158 @@
+logging:
+    level:
+#        tk.mybatis: DEBUG
+        com.github.wxiaoqi.security.admin: DEBUG
+spring:
+    application:
+        name: flyray-admin
+    jackson:
+        date-format: yyyy-MM-dd HH:mm:ss
+        time-zone: GMT+8
+        default-property-inclusion: non_null
+    redis:  
+      #数据库索引  
+      database: 0  
+      host: 127.0.0.1
+      port: 6379  
+      password: 123456
+      jedis:  
+        pool:  
+          #最大连接数  
+          max-active: 8  
+          #最大阻塞等待时间(负数表示没限制)  
+          max-wait: -1  
+          #最大空闲  
+          max-idle: 8  
+          #最小空闲  
+          min-idle: 0  
+      #连接超时时间  
+      timeout: 10000
+    datasource:
+        name: test
+        url: jdbc:mysql://localhost:3306/flyray_admin_v1?useUnicode=true&characterEncoding=UTF8
+        username: root
+        password: blxd
+        # 使用druid数据源
+        type: com.alibaba.druid.pool.DruidDataSource
+        driver-class-name: com.mysql.jdbc.Driver
+        filters: config,stat,wall,log4j
+        maxActive: 20
+        initialSize: 1
+        maxWait: 60000
+        minIdle: 1
+        timeBetweenEvictionRunsMillis: 60000
+        minEvictableIdleTimeMillis: 300000
+        validationQuery: select 'x'
+        testWhileIdle: true
+        testOnBorrow: false
+        testOnReturn: false
+        poolPreparedStatements: true
+        maxOpenPreparedStatements: 20
+          
+    rabbitmq:
+        host: 127.0.0.1
+        port:  5672
+        username: guest
+        password: guest
+    sleuth:
+      enabled: true
+      http:
+        legacy:
+          enabled: true
+    zipkin:
+      base-url: http://localhost:9411
+      
+sample:
+  zipkin:
+    # When enabled=false, traces log to the console. Comment to send to zipkin
+    enabled: false
+
+mybatis:
+    basepackage: me.flyray.admin.mapper
+    xmlLocation: classpath:mapper/**/*.xml
+    mapper-locations: "classpath*:mapper/*.xml"
+
+server:
+    port: 8762
+
+# 必须配置
+feign:
+  httpclient:
+    enabled: false
+  okhttp:
+    enabled: true
+
+ribbon:
+  eureka:
+    enabled: false #配置是不启动ribbon eureka
+  ReadTimeout: 100000
+  ConnectTimeout: 100000
+  MaxAutoRetries: 0
+  MaxAutoRetriesNextServer: 1
+  OkToRetryOnAllOperations: false
+
+hystrix:
+  threadpool:
+    default:
+      coreSize: 1000 ##并发执行的最大线程数，默认10
+      maxQueueSize: 1000 ##BlockingQueue的最大队列数
+      queueSizeRejectionThreshold: 500 ##即使maxQueueSize没有达到，达到queueSizeRejectionThreshold该值后，请求也会被拒绝
+  command:
+    default:
+      execution:
+        isolation:
+          thread:
+            timeoutInMilliseconds: 110000
+
+
+# 配置swagger
+swagger:
+    enabled: true
+    base-package: com.github.wxiaoqi.security.admin
+    title: flyray-admin
+    version: 1.0.0.SNAPSHOT
+    description: 管理后端服务
+    contact:
+        name: admin
+
+jwt:
+  token-header: Authorization
+  expire: 14400
+  rsa-secret: xx1WET12^%3^(WE45
+  
+auth:
+  serviceId: flyray-auth
+  user:
+    token-header: Authorization
+  client:
+    id: flyray-admin
+    secret: 123456
+    token-header: x-client-token
+
+#redis-cache 相关
+redis:
+    pool:
+         maxActive: 300
+         maxIdle: 100
+         maxWait: 1000
+    host: localhost
+    port:  6379
+    password:
+    timeout: 2000
+    # 服务或应用名
+    sysName: flyray-admin
+    enable: true
+    database: 0
+    
+logging:
+    level:
+#        tk.mybatis: DEBUG
+        com.github.wxiaoqi.security.admin: DEBUG
+toplevel:
+  platform:
+    id: 13608825924956160
+admin:
+  deptParentId: 1 #如果是平台，平台的父级固定是 海盗集团，id为1，如果修改了最高级目录则要修改修改此处值
+  password: 1feacd77ad53a97981b736592c073dd0 #添加平台/商户添加的用户的默认密码 123456
+  platformAuthorityId: 13 #方法中固定使用id为13（name“云支付平台管理员（本角色绝对不能删除）”）的角色作为基础角色,如果基础角色修改了，则此处修改,平台
+  merchantAuthorityId: 89 #方法中固定使用id为89（name"商户管理员（不能删）"）的角色作为基础角色,如果基础角色修改了，则此处修改,商户

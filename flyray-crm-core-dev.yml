@@ -1,0 +1,165 @@
+logging:
+    level:
+#        tk.mybatis: DEBUG
+        com.github.wxiaoqi.security.admin: DEBUG
+server:
+    port: 5690 #启动端口
+
+spring:
+    application:
+        name: flyray-crm-core
+    jackson:
+        date-format: yyyy-MM-dd HH:mm:ss
+        time-zone: GMT+8
+        default-property-inclusion: non_null
+    datasource:
+        name: test
+        url: jdbc:mysql://localhost:3306/flyray_admin_v1?useUnicode=true&characterEncoding=UTF8
+        username: root
+        password: blxd
+        # 使用druid数据源
+        type: com.alibaba.druid.pool.DruidDataSource
+        driver-class-name: com.mysql.jdbc.Driver
+        filters: stat
+        maxActive: 20
+        initialSize: 1
+        maxWait: 60000
+        minIdle: 1
+        timeBetweenEvictionRunsMillis: 60000
+        minEvictableIdleTimeMillis: 300000
+        validationQuery: select 'x'
+        testWhileIdle: true
+        testOnBorrow: false
+        testOnReturn: false
+        poolPreparedStatements: true
+        maxOpenPreparedStatements: 20     
+    rabbitmq:
+        host: 127.0.0.1
+        port:  5672
+        username: guest
+        password: guest
+    redis: 
+      #数据库索引  
+      database: 0  
+      host: 127.0.0.1
+      port: 6379  
+      password: 123456
+      jedis:  
+        pool:  
+          #最大连接数  
+          max-active: 8  
+          #最大阻塞等待时间(负数表示没限制)  
+          max-wait: -1  
+          #最大空闲  
+          max-idle: 8  
+          #最小空闲  
+          min-idle: 0  
+      #连接超时时间  
+      timeout: 10000  
+    sleuth:
+      enabled: true
+      http:
+        legacy:
+          enabled: true
+    zipkin:
+      base-url: http://localhost:9411
+    http:
+      multipart:
+        maxFileSize: 100Mb
+        maxRequestSize: 100Mb  
+mybatis:
+    basepackage: me.flyray.crm.core.mapper
+    xmlLocation: classpath:mapper/**/*.xml
+    mapper-locations: "classpath*:mapper/*.xml"
+# 必须配置
+feign:
+  httpclient:
+    enabled: false
+  okhttp:
+    enabled: true
+
+ribbon:
+  eureka:
+    enabled: false #配置是不启动ribbon eureka
+  ReadTimeout: 100000
+  ConnectTimeout: 100000
+  MaxAutoRetries: 0
+  MaxAutoRetriesNextServer: 1
+  OkToRetryOnAllOperations: false
+
+hystrix:
+  threadpool:
+    default:
+      coreSize: 1000 ##并发执行的最大线程数，默认10
+      maxQueueSize: 1000 ##BlockingQueue的最大队列数
+      queueSizeRejectionThreshold: 500 ##即使maxQueueSize没有达到，达到queueSizeRejectionThreshold该值后，请求也会被拒绝
+  command:
+    default:
+      execution:
+        isolation:
+          thread:
+            timeoutInMilliseconds: 110000
+            
+# 配置swagger
+swagger:
+    enabled: true
+    base-package: com.github.wxiaoqi.security.crm.core
+    title: flyray-crm-core
+    version: 1.0.0.SNAPSHOT
+    description: 管理后端服务-CRM
+    contact:
+        name: biz
+    apply-default-response-messages: true
+    ui-config:
+      json-editor: false
+      show-request-headers: true
+      request-timeout: 5000
+      submit-methods: get,delete
+
+auth:
+  serviceId: flyray-auth
+  user:
+    token-header: Authorization
+    pub-key:
+      path: jwt/pub.key
+  client:
+    id: flyray-crm-core
+    secret: 123456
+    token-header: x-client-token
+    pub-key:
+      path: client/pub.key
+
+crm:
+  account:
+    balanceSaltValue: BSV00123
+bountyHunter:
+  acceptBizNo: ICLOUDPAY001
+  imgCodeTime: 300
+  smsCodeTime: 300
+  balanceSaltValue: BSV00123
+salt:
+  key: c7e971f115f6ccea0bc03a3b1cc5e94a
+#RSA解密私钥
+platform: 
+  cardNoPrivateKey: MIICdgIBADANBgkqhkiG9w0BAQEFAASCAmAwggJcAgEAAoGBAOOREtuaCUyZla5uJlOLl4WVuiSS+JDy/YCabYVgdrKKeFeKHeyyaiNKVbb+tUQUfYnav4JZVINHlAonPfh1Pjz7njWwqeRm4Ci7KBy3QzG5DQpfns6n3Ht6UCf+JOVuf33dJifkFmUCWXr8kdNN4lrE3a1ogMuGQALIogCe3HIjAgMBAAECgYEApmJS5Gc6d1wv+Yol0Z3VmmE/6S/gN7LCML44Z3WBM8dUd8TPXlmQit71zsdqZy2IIDvlG/wOc7HpBodsovWuG20kV/YDUmbBZA7OGYC0LLaGV3MeEKI7p+nKAOA+vswd9RMYrNL3ZCM6O0cpQjoNUxVhVXeWbvPhBsYzptIRT4ECQQD72MOeKqucN1N8FRrEexrRwxmPxrbSUfrdk3B3oECEBkY3WYz72o2afHNyQrGe4MbRWJqs2INxJa0uV8jyKqnjAkEA51HOGfr69NBBv2QrmaBhmX1xdWRBvVvnWPeT6ngP7aizfPj/OKCr1XAEVScqxQk2NOvddRPBVJa41D0PAMqKwQJAJNVaHtrcyHcrBZ3MkWnzzTP8nBOTD4Wf7CIxM73DUcvdHyFAxmD7jtmexNpOQg9b5KhRzu/HoZfCEWITaJ+mwwJADaRUbFHR5Qg3KGtm6tt7hgrQ2yR7gAhgf22yanyEK/bsBu3EV3maSK8fgkoaCp69dKeIWvQ8TZnJ8rJbJSfMwQJANJ7xfIElqEPTtWtGymd/zB8kuhSTI1h7Zggh6Jd9NfXT0Rvw3KvI+1/1jsundanw3LGnMnIOyfX6ib+IaX+9MQ==
+#图片上传地址
+hunderImg:
+   url: /opt/hunderImg/
+   ip: http://112.243.253.73:8088/
+toplevel:
+  platform:
+    id: 13608825924956160
+
+aliyun:
+  sms:
+    accessKeyId: LTAImVws8vSV9l6p
+    accessKeySecret: u4ktUQEEwHJ3aC1fshPXhVJY6jn8FW
+    signName:
+      icloudpay: 潍坊市云支付
+    template:
+      register: SMS_95250027
+    validityPeriod: 2
+#微信授权appid密钥
+wechat:
+  appid: wx6225d2d623ff1b40
+  secret: 548bc84204dba0e8abd6402dbb04f2a2

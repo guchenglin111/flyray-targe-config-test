@@ -1,0 +1,181 @@
+spring:
+  cloud: 
+    sentinel:
+      transport:
+        dashboard: localhost:9999
+  thymeleaf:
+      mode: LEGACYHTML5
+      cache: false
+  jackson:
+      date-format: yyyy-MM-dd HH:mm:ss
+      time-zone: GMT+8
+      default-property-inclusion: non_null
+  redis:  
+      #数据库索引  
+      database: 0  
+      host: 47.111.16.217
+      port: 6379
+      password: 123456
+      jedis:  
+        pool:  
+          #最大连接数  
+          max-active: 8  
+          #最大阻塞等待时间(负数表示没限制)  
+          max-wait: -1  
+          #最大空闲  
+          max-idle: 8  
+          #最小空闲  
+          min-idle: 0  
+      #连接超时时间  
+      timeout: 10000  
+  rabbitmq:
+        host: 127.0.0.1
+        port:  5672
+        username: guest
+        password: guest
+
+server:
+    port: 8765 #启动端口
+
+#请求和响应GZIP压缩支持
+feign:
+  httpclient:
+    enabled: false
+  okhttp:
+    enabled: true
+  compression:
+    request:
+      enabled: true
+      mime-types: text/xml,application/xml,application/json
+      min-request-size: 2048
+    response:
+      enabled: true
+
+#
+zuul:
+  ignored-headers: Access-Control-Allow-Credentials, Access-Control-Allow-Origin
+  ignored-services: "*"
+  sensitive-headers: Access-Control-Allow-Origin
+  prefix: /api #为zuul设置一个公共的前缀
+  ratelimit: # 网关限流
+    key-prefix: gate_rate
+    enabled: true
+    repository: REDIS #REDIS, JPA, IN_MEMORY
+    behind-proxy: true
+    default-policy: #optional - will apply unless specific policy exists
+      limit: 1000
+      refresh-interval: 60 #default value (in seconds)
+      type: #optional
+        - user
+        - origin
+        - url
+  routes:
+    back:
+      path: /admin/**
+      serviceId: flyray-admin
+    auth:
+      path: /auth/**
+      serviceId: flyray-auth
+    crmapi: #对外提供的
+      path: /crm/**
+      serviceId: flyray-crm-core
+    bizapi: #对外提供的
+      path: /biz/**
+      serviceId: flyray-biz
+    paycoreapi: #对外提供的
+      path: /payCore/**
+      serviceId: flyray-pay-core
+    admincrmapi: #内部管理的
+      path: /adminCrm/**
+      serviceId: flyray-crm-core
+    adminbizapi: #内部管理的
+      path: /adminBiz/**
+      serviceId: flyray-biz
+    adminpaycoreapi: #内部管理的
+      path: /adminPayCore/**
+      serviceId: flyray-pay-core
+    adminmallapi: #内部管理的
+      path: /adminmall/**
+      serviceId: flyray-mall-admin-api
+    mallapi: #内部管理的
+      path: /mall/**
+      serviceId: flyray-mall-api
+#api接口文档地址
+    admin-doc:
+      path: /doc/admin/**
+      serviceId: flyray-admin
+    auth-car:
+      path: /doc/auth/**
+      serviceId: flyray-auth
+    crm-core:
+      path: /doc/crm/**
+      serviceId: flyray-crm-core
+    ssp:
+      path: /ssp/**
+      serviceId: firstsnow-ssp
+    dsp:
+      path: /dsp/**
+      serviceId: firstsnow-dsp
+    ssp-engine:
+      path: /ssp-engine/**
+      serviceId: firstsnow-ssp-engine
+    dsp-engine:
+      path: /dsp-engine/**
+      serviceId: firstsnow-dsp-engine
+rest:
+  api:
+    names: admin,auth,crm
+ribbon:
+  eureka:
+    enabled: false  #配置是不启动ribbon eureka
+  ReadTimeout: 60000
+  ConnectTimeout: 5000
+  MaxAutoRetries: 0
+  MaxAutoRetriesNextServer: 1
+  OkToRetryOnAllOperations: false
+
+
+hystrix:
+  threadpool:
+    default:
+      coreSize: 1000 ##并发执行的最大线程数，默认10
+      maxQueueSize: 1000 ##BlockingQueue的最大队列数
+      queueSizeRejectionThreshold: 500 ##即使maxQueueSize没有达到，达到queueSizeRejectionThreshold该值后，请求也会被拒绝
+  command:
+    default:
+      execution:
+        isolation:
+          thread:
+            timeoutInMilliseconds: 135000
+
+
+gate:
+  token:
+    ignore: 
+      startWiths: /static,/admin/auth/token,/admin/auth/identifyingCode,/ssp/v1/publisher/register,/ssp-engine/bidRequest,/dsp-engine/demandService,/ssp-engine/adEvent/report,/ssp/v1/publisher/login,/admin/jwt,/admin/menu/jwt,/dsp/v1/advertiser/login,/dsp/v1/advertiser/register,/dsp/v1/common/oss/img/upload
+      crm:
+        startWith: /crm
+      codex:
+        startWith: /codex
+      biz:
+        startWith: /biz
+      mall:
+        startWith: /mall
+  sign:
+    ignore: 
+      startWiths: /ssp-engine/bidRequest,/ssp-engine/adEvent/report
+    intercept_Urls: /static
+
+auth:
+  serviceId: flyray-auth
+  user:
+    token-header: Authorization
+  client:
+    token-header: x-client-token
+    id: flyray-gate  #不填则默认读取spring.application.name
+    secret: 123456
+toplevel:
+  platform:
+    id: 13608825924956160
+
+    
